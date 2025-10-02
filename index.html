@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I'm thankful for you</title>
+
+  <!-- Fonts: Preset 1 (Vintage Romantic) -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Cormorant+Garamond:wght@600&family=Spline+Sans:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#0f172a; --bg2:#1e293b;
+      --accent:#a78bfa; --accent2:#f472b6;
+      --text:#e5e7eb; --muted:#cbd5e1;
+      --cardGlass: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+    }
+
+    /* Base */
+    html,body{ height:100%; }
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family:"Spline Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      letter-spacing:.003em;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      background:
+        radial-gradient(1100px 700px at 18% 10%, #1b2350 0%, transparent 60%),
+        radial-gradient(900px 620px at 82% 88%, #3b235a 0%, transparent 60%),
+        linear-gradient(160deg, #0f172a, #1b273a);
+    }
+    img{ -webkit-user-drag:none; user-drag:none; }
+
+    .wrap{ width:min(1100px,94vw); margin:0 auto; padding:26px 0 56px; }
+
+    /* HERO */
+    .hero{ position:relative; overflow:hidden; border-radius:20px;
+      box-shadow:0 24px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+      border:1px solid var(--border); margin-bottom:28px; background:#0b1022; }
+    .hero img{ width:100%; height:clamp(420px,70vh,800px);
+      object-fit:contain; object-position:center top; background:#0b1022;
+      display:block; filter:saturate(1.05) contrast(1.03) brightness(.98); }
+    .hero-overlay{ position:absolute; inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,.45) 70%,rgba(0,0,0,.55));
+      display:flex; align-items:flex-end; justify-content:center; text-align:center; padding:20px;
+      pointer-events:none; }
+    .hero h1{ margin:0 0 8px; font-size:clamp(28px,4.5vw,44px);
+      font-family:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+      font-weight:600; letter-spacing:.01em;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      cursor:pointer; pointer-events:auto; }
+    .hero p{ margin:0 auto 6px; max-width:70ch; color:var(--muted); font-size:clamp(14px,1.8vw,18px); pointer-events:auto; }
+
+    /* CHAPTER */
+    .chapter{ display:grid; gap:22px; align-items:center; grid-template-columns:1.2fr 1fr; margin:30px 0; }
+    @media(max-width:900px){ .chapter{ grid-template-columns:1fr; } }
+    .panel{ background:linear-gradient(180deg,var(--cardGlass),rgba(255,255,255,0.02));
+      border:1px solid var(--border); border-radius:16px; overflow:hidden;
+      box-shadow:0 10px 28px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+      cursor:pointer; }
+    .panel img{ width:100%; height:100%; max-height:520px; object-fit:cover; display:block; }
+
+    /* POEM */
+    .poem-shell{ padding:2px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); }
+    .poem-card{ border-radius:12px; background:rgba(255,255,255,0.04); padding:22px 20px; min-height:180px;
+      animation:fadeIn .55s ease; box-shadow:0 10px 28px rgba(0,0,0,.28); border:1px solid rgba(255,255,255,0.12);}
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+    .poem-title{ font-family:"Dancing Script", cursive; font-size:clamp(22px,3vw,30px); text-align:center; margin:0 0 10px; color:#fff; }
+    .poem-meta{ text-align:center; margin:-6px 0 10px; font-size:12px; color:#cfd5e6; opacity:.9; }
+    .poem-text{ white-space:pre-wrap; font-family:"EB Garamond", Georgia, "Times New Roman", serif; font-size:clamp(16px,2vw,18px); line-height:1.9; color:#f0f3ff; letter-spacing:.004em; }
+
+    /* INTERLUDE */
+    .interlude{ margin:22px 0; border-radius:16px; overflow:hidden;
+      border:1px solid var(--border); box-shadow:0 16px 44px rgba(0,0,0,.4); cursor:pointer; }
+    .interlude img{ width:100%; height:clamp(220px,40vh,420px); object-fit:cover; display:block; }
+
+    /* GALLERY */
+    .gallery{ margin-top:18px; display:grid; gap:14px; grid-template-columns:repeat(12,1fr); }
+    .g1{ grid-column:span 12; }
+    @media(max-width:900px){ .g1{ grid-column:span 12; } }
+    .gallery .panel img{ max-height:360px; }
+
+    /* LIGHTBOX (with poem/caption panel) */
+    body.modal-open{ overflow:hidden; }
+    .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.85);
+      display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+      overscroll-behavior:contain; }
+    .lightbox.show{ display:flex; }
+    .lb-inner{ display:grid; gap:14px; grid-template-columns:minmax(0,1fr) 360px; max-width:1200px; width:100%; }
+    @media(max-width:900px){ .lb-inner{ grid-template-columns:1fr; } }
+    .lightbox img{ width:100%; max-height:86vh; object-fit:contain; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.6); background:#0b1022; }
+    .lb-card{
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px; padding:14px; max-height:86vh; overflow:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    .lb-title{ font-family:"Cormorant Garamond", Georgia, "Times New Roman", serif; font-weight:600; }
+    .lb-text{
+      white-space:pre-wrap; color:#e6e9f5; font-size:15px; line-height:1.8;
+      font-family:"EB Garamond", Georgia, "Times New Roman", serif; letter-spacing:.004em;
+      word-break:break-word;
+    }
+    .lb-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
+    .btn{ appearance:none; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; padding:8px 10px; border-radius:10px; cursor:pointer; }
+    .btn:hover{ background:rgba(255,255,255,.12); }
+
+    /* EASTER EGGS: shared modal */
+    .egg-scrim{
+      position:fixed; inset:0; background:rgba(0,0,0,0.55);
+      backdrop-filter:blur(4px); display:none; opacity:0; transition:opacity .25s ease; z-index:110;
+      align-items:center; justify-content:center; overscroll-behavior:contain;
+    }
+    .egg-scrim.show{ display:flex; opacity:1; }
+    .egg-modal{
+      position:relative; width:min(560px, 92vw);
+      max-height:90vh; display:flex; flex-direction:column; /* enables inner scroller */
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(20,24,45,.95), rgba(12,14,28,.96));
+      border:1px solid rgba(255,255,255,0.14);
+      box-shadow:0 20px 60px rgba(0,0,0,.45); padding:22px 20px 18px; overflow:hidden;
+    }
+    .egg-title{
+      margin:0 0 10px; font-size:clamp(20px, 4.8vw, 26px);
+      font-family:"Cormorant Garamond", Georgia, "Times New Roman", serif; font-weight:600; letter-spacing:.01em;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text; background-clip:text; color:transparent; text-align:center;
+    }
+    .egg-text{
+      margin:4px auto 8px; max-width:52ch; font-size:clamp(16px, 2.5vw, 18px);
+      color:#e7eaf3; text-align:center; min-height:1.6em;
+      font-family:"EB Garamond", Georgia, "Times New Roman", serif; line-height:1.9; letter-spacing:.004em;
+      overflow:auto; -webkit-overflow-scrolling:touch; max-height:calc(90vh - 110px); word-break:break-word;
+    }
+    .egg-text pre{ font-family:"EB Garamond", Georgia, "Times New Roman", serif; white-space:pre-wrap; margin:0; background:none; border:0; padding:0; }
+
+    /* Subtle entrance animations for eggs */
+    @keyframes eggDrawer { from{ transform:translateY(20px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+    @keyframes eggZoom   { from{ transform:scale(.96); opacity:0; } to{ transform:scale(1); opacity:1; } }
+    .egg-modal.drawer{ animation:eggDrawer .35s ease-out both; }
+    .egg-modal.zoom  { animation:eggZoom   .28s ease-out both; }
+
+    /* Invisible hotspot (moved to top-left, disabled while modals open) */
+    #hotspot{
+      position:fixed;
+      top: calc(env(safe-area-inset-top, 0) + 8px);
+      left: calc(env(safe-area-inset-left, 0) + 8px);
+      width:56px; height:56px;
+      z-index:100; background:transparent; cursor:default;
+    }
+    body.modal-open #hotspot{ pointer-events:none; }
+    /* Uncomment while testing to see it:
+    #hotspot{ background: rgba(255,0,0,.25); }
+    */
+	
+	/* Make Banana Duck immune to iOS/Android long-press callouts */
+#bananaDuck{
+  -webkit-touch-callout: none;   /* iOS: no Save/Share popup */
+  -webkit-user-drag: none;
+  user-drag: none;
+  user-select: none;
+  touch-action: none;            /* let our pointer handler own the gesture */
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- HERO -->
+    <header class="hero">
+      <img src="lil' gup.jpg" alt="Allie in the lab">
+      <div class="hero-overlay">
+        <div>
+          <h1 id="title" title="(psst… tap the title 3×)">I'm thankful for you.</h1>
+          <p>For the little things, the surprise laughs, and the way you make ordinary moments feel like highlights. Thanks for being you.</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- CHAPTER 1 -->
+    <section class="chapter">
+      <figure class="panel">
+        <img
+          src="SampleNoob.png"
+          alt="Cartoon: Uno card mischief in the lab"
+          loading="lazy"
+          data-title="Sample Noob"
+          data-poem="Some heroes wear capes.  
+Others wield fire extinguishers.  
+But the rarest hero of all?  
+Sample Noob: clumsy nemesis, comic relief,  
+and eternal reminder that not every experiment  
+goes according to plan."
+        >
+      </figure>
+      <div class="poem-shell">
+        <article class="poem-card">
+          <h3 class="poem-title">The Little Things</h3>
+          <div class="poem-meta">Shared moments — 2025</div>
+          <div class="poem-text">
+I searched among the lab supplies,
+And tried a rhyme or two,
+To write about the little things
+I’ve shared at work with you.
+
+But none of them could quite express
+The things I’d like to say,
+For only you could understand
+Our jokes along the way.
+
+From battles with an Uno card
+That sneaks from hand to hand,
+To lil’ gup facing Sample Noob
+In games we can’t withstand.
+
+The Saturdays I treasure most,
+When work feels less a chore,
+Because those days I get the chance
+To laugh with you some more.
+
+A hidden card, a scribbled line,
+Or something left behind,
+These little things might seem so small,
+But still they ease my mind.
+
+One day brought a mighty flame,
+A scramble through the haze,
+Yet even in the heat we laughed,
+A moment I still praise.
+
+You brighten up the darker days,
+You make the lab less bland,
+A spark of joy, a steady friend,
+A gift I never planned.
+
+No final card, no clever trick,
+No scavenger left to play,
+Just words I’ve wanted you to hear
+But never found a way.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- INTERLUDE (banana duck) -->
+    <section class="interlude">
+      <img
+        id="bananaDuck"
+        src="bananaDuck.jpg"
+        alt="The legendary banana duck at the water's edge"
+        loading="lazy"
+        draggable="false"
+        data-title="Banana Duck"
+        data-poem="Legend has it that deep within the wetlands, where fruit meets fowl, the Banana Duck reigns supreme.  
+Some say it quacks. Others swear it peels. Either way, it appears only for those who can truly appreciate the absurd. 
+I can’t explain why it exists, but here it is. Equal parts majestic, ridiculous, and unnecessary; much like most of our best ideas. If nothing else, it proves that sometimes nonsense is the glue that keeps the laughs going."
+      >
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery">
+      <figure class="panel g1">
+        <img
+          src="MuffleFire.png"
+          alt="Cartoon: lab mishap with flames (still laughing through it)"
+          loading="lazy"
+          data-title="The Lab Fire"
+          data-poem="We might not have discovered alchemy, but we did figure out how to turn “what happens if we burn this?” into an Olympic event.  
+The muffle furnace was supposed to be our quiet accomplice, but instead it staged a rebellion and nearly set the lab ablaze.  
+
+And yet, even in the smoke, sparks, and scramble, we laughed.  
+Because if I’m going to almost burn down a lab, I can’t think of anyone I’d rather share that memory with."
+        >
+      </figure>
+
+      <figure class="panel g1">
+        <img
+          src="TourDePace.png"
+          alt="Cartoon: Tour de Pace office chair race"
+          loading="lazy"
+          data-title="Tour De Pace"
+          data-poem="Congratulations, you survived the Tour De Pace! The only office tour with fewer safety regulations than a shopping cart ride in Walmart’s parking lot. I know you had other options, like walking, and I'm honored you trusted me. If you enjoyed your trip, great. If not, then please write your complaints on a sticky note and throw it directly in the trash where they belong. If you would be so kind as to take your right middle finger, raise it high in the air so I know the message has been received, then use it to press the link provided at the bottom of the page, I would forever be grateful. You'll be promptly taken absolutely nowhere. 'It is here that you'll find familiarity, seeing as how that's precisely where your life is going.' - Confucius, maybe
+
+In all earnest, you thanked me for 'taking the L' the other day and I couldn't for the life of me figure out what you were referring to. Seemingly menial gestures, such as this one, catch me off guard because it's not the norm of my world.
+
+Allow me to return the gesture and respond in kind. Thank you for simply being present and indulging in silly antics with me. It's a rare quality, one that you possess, and one I'll never take for granted. Despite sometimes feeling I may be a little over the top or perhaps even teeter on the edge of malevolence, I couldn't think more highly of you.
+
+P.S. You had asked if I had any vices; weirdly enough I thought of this all weekend. Ultimately and ironically, I did find that there exists a vice."
+        >
+      </figure>
+
+      <figure class="panel g1">
+        <img
+          src="JamSession.png"
+          alt="Shared music session cartoon"
+          loading="lazy"
+          data-title="Jam Session"
+          data-poem="In moments like these, miles turn into melodies. Your songs carry me through the extra mile when I’m working out, every beat adding fuel to the push.  
+You’ve opened my ears to new sounds I might’ve never found. Those fiery Spanish tracks? They might just be my new favorites."
+        >
+      </figure>
+    </section>
+
+  </div>
+
+  <!-- Secret Message Modal (title triple-tap) -->
+  <div class="egg-scrim" id="eggScrim" role="dialog" aria-modal="true">
+    <div class="egg-modal" id="eggModal1">
+      <button class="egg-close" id="eggClose" aria-label="Close">✕</button>
+      <h2 class="egg-title">A little secret:</h2>
+      <div class="egg-text" id="eggText"></div>
+    </div>
+  </div>
+
+  <!-- Lightbox w/ poem panel -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lb-inner">
+      <img id="lbImage" src="" alt="">
+      <div class="lb-card">
+        <h4 class="lb-title" id="lbTitle"></h4>
+        <div class="lb-text" id="lbText"></div>
+        <div class="lb-actions">
+          <button class="btn" id="lbPrev" aria-label="Previous image">← Prev</button>
+          <button class="btn" id="lbNext" aria-label="Next image">Next →</button>
+          <button class="btn" id="lbClose" aria-label="Close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secret Poem Modal (Konami Code) -->
+  <div class="egg-scrim" id="konamiScrim" role="dialog" aria-modal="true">
+    <div class="egg-modal" id="konamiModal">
+      <button class="egg-close" id="konamiClose" aria-label="Close">✕</button>
+      <h2 class="egg-title">The Seam</h2>
+      <div class="egg-text">
+        <pre>
+I lived by measured increments,
+Each choice a line, a plan,
+A life of careful distances
+Where nothing slipped my hand.
+
+But then you bent the symmetry,
+A glitch I couldn’t chart,
+A variable I failed to solve
+That rewrote every part.
+
+The more I tried to calculate
+The pattern of your sway,
+The more I found your presence there
+At every empty space.
+
+Addiction feels too simple now,
+Too shallow for the truth,
+It’s fascination woven deep
+Through every thought of you.
+
+Your voice, your walk, your gaze, your smile,
+The way you fill a room,
+A current pulling steady
+Through chaos and through bloom.
+
+I used to think control was strength,
+That distance kept me free,
+But every step I take away
+Draws more of you to me.
+
+And so I stand, unraveled,
+A seam I can’t undo,
+Not lost within a passing whim,
+But changed because of you.
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secret Poem Modal (Banana Duck) -->
+  <div class="egg-scrim" id="duckScrim" role="dialog" aria-modal="true">
+    <div class="egg-modal" id="duckModal">
+      <button class="egg-close" id="duckClose" aria-label="Close">✕</button>
+      <h2 class="egg-title">Vice</h2>
+      <div class="egg-text" id="duckText">
+        <pre>
+You asked me of my vices,
+I paused and found no word,
+For nothing came to meet me
+In the silence that I heard.
+
+No bottle I return to,
+No smoke that stains the air,
+No guilty game or fleeting thrill
+I couldn’t leave with care.
+
+Yet all that weekend, I replayed
+Your question in my head,
+And irony revealed itself
+In everything unsaid.
+
+A thought began to linger,
+A truth I couldn’t place,
+A presence woven subtly
+Through every empty space.
+
+Not poison, not indulgence,
+Not weakness dressed as need,
+But something far more constant still
+That alters how I breathe.
+
+It surfaced in your laughter,
+Your voice, your gaze, your smile,
+A current running quietly,
+Persistent all the while.
+
+And so the answer came at last,
+Both startling and true:
+When you had asked me of my vice,
+I realized it was you.
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secret Poem Modal (Hotspot) -->
+  <div class="egg-scrim" id="hermosaScrim" role="dialog" aria-modal="true">
+    <div class="egg-modal" id="hermosaModal">
+      <button class="egg-close" id="hermosaClose" aria-label="Close">✕</button>
+      <h2 class="egg-title">Un recordatorio:</h2>
+      <div class="egg-text" id="hermosaText"></div>
+    </div>
+  </div>
+
+  <!-- Invisible Hotspot in top-left (long-press to open) -->
+  <div id="hotspot" aria-hidden="true"></div>
+<script>
+  // Utility: open/close egg modals with animation class
+  function openEggModal(scrimId, modalId, animClass){
+    const scrim = document.getElementById(scrimId);
+    const modal = document.getElementById(modalId);
+    if(!scrim || !modal) return;
+    modal.classList.remove('drawer','zoom');
+    if(animClass) modal.classList.add(animClass);
+    document.body.classList.add('modal-open');
+    scrim.classList.add('show');
+  }
+  function closeEggModal(scrimId){
+    const scrim = document.getElementById(scrimId);
+    if(!scrim) return;
+    scrim.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+</script>
+
+<script>
+  // Lightbox logic (with poem/caption support)
+  const clickableImgs = Array.from(document.querySelectorAll('.panel img, .interlude img'));
+  (function(){
+    const lightbox = document.getElementById('lightbox');
+    const lbImg    = document.getElementById('lbImage');
+    const lbTitle  = document.getElementById('lbTitle');
+    const lbText   = document.getElementById('lbText');
+    const btnPrev  = document.getElementById('lbPrev');
+    const btnNext  = document.getElementById('lbNext');
+    const btnClose = document.getElementById('lbClose');
+    let index = -1;
+
+    function render(i){
+      const el = clickableImgs[i];
+      lbImg.src = el.src;
+      lbImg.alt = el.alt || '';
+      lbTitle.textContent = el.dataset.title || '';
+      lbText.textContent  = el.dataset.poem || '';
+      btnPrev.disabled = (i <= 0);
+      btnNext.disabled = (i >= clickableImgs.length - 1);
+    }
+    function open(i){ index=i; render(index); lightbox.classList.add('show'); document.body.classList.add('modal-open'); }
+    function close(){ lightbox.classList.remove('show'); document.body.classList.remove('modal-open'); }
+    function prev(){ if(index>0){ index--; render(index); } }
+    function next(){ if(index<clickableImgs.length-1){ index++; render(index); } }
+
+    clickableImgs.forEach((img,i)=> img.addEventListener('click', ()=>open(i)));
+    btnClose.addEventListener('click', close);
+    btnPrev.addEventListener('click', prev);
+    btnNext.addEventListener('click', next);
+    lightbox.addEventListener('click', (e)=>{ if(e.target===lightbox) close(); });
+    document.addEventListener('keydown', (e)=>{
+      if(!lightbox.classList.contains('show')) return;
+      if(e.key==='Escape') close();
+      if(e.key==='ArrowLeft') prev();
+      if(e.key==='ArrowRight') next();
+    });
+  })();
+</script>
+
+<script>
+  // Easter egg #1 — triple tap/click on the hero title
+  (function(){
+    const title=document.getElementById('title');
+    const scrim=document.getElementById('eggScrim');
+    const closeBtn=document.getElementById('eggClose');
+    const eggTextEl=document.getElementById('eggText');
+    const message="You're my favorite part of the day";
+    let taps=0,tapTimer;
+
+    function openEgg(){
+      openEggModal('eggScrim','eggModal1','zoom');
+      eggTextEl.textContent='';
+      let i=0,speed=38;
+      (function typer(){ 
+        if(i<=message.length){ eggTextEl.textContent=message.slice(0,i++); setTimeout(typer,speed); }
+      })();
+    }
+    function closeEgg(){ closeEggModal('eggScrim'); }
+
+    title.addEventListener('click',()=>{
+      taps++;
+      clearTimeout(tapTimer);
+      tapTimer=setTimeout(()=>taps=0,600);
+      if(taps===3){ openEgg(); taps=0; }
+    });
+
+    closeBtn.addEventListener('click',closeEgg);
+    scrim.addEventListener('click',(e)=>{ if(e.target===scrim) closeEgg(); });
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeEgg(); });
+  })();
+</script>
+
+<script>
+  // Easter egg #2 — Konami arrows: desktop (keys) + mobile (swipes)
+  (function(){
+    const keySeq = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight"];
+    let keyProgress = 0;
+    const swipeSeq = ["U","U","D","D","L","R","L","R"];
+    let swipeProgress = 0;
+    const scrim=document.getElementById('konamiScrim');
+    const closeBtn=document.getElementById('konamiClose');
+
+    function openPoem(){ openEggModal('konamiScrim','konamiModal','drawer'); }
+    function closePoem(){ closeEggModal('konamiScrim'); }
+
+    document.addEventListener("keydown",(e)=>{
+      if(e.key===keySeq[keyProgress]){
+        keyProgress++;
+        if(keyProgress===keySeq.length){ openPoem(); keyProgress=0; }
+      } else { keyProgress=0; }
+    });
+
+    let startX=0,startY=0,startTime=0,tracking=false;
+    const MIN_DIST=30,MAX_TIME=800,DEADZONE=12;
+    function dirFromDelta(dx,dy){
+      const adx=Math.abs(dx), ady=Math.abs(dy);
+      if(adx<DEADZONE && ady<DEADZONE) return null;
+      return (ady>adx)?(dy<0?"U":"D"):(dx<0?"L":"R");
+    }
+    document.addEventListener('touchstart',(ev)=>{
+      if(ev.touches.length!==1) return;
+      const t=ev.touches[0]; startX=t.clientX; startY=t.clientY; startTime=Date.now(); tracking=true;
+    },{passive:true});
+    document.addEventListener('touchend',(ev)=>{
+      if(!tracking) return; tracking=false;
+      const t=ev.changedTouches[0]; const dx=t.clientX-startX, dy=t.clientY-startY; const dt=Date.now()-startTime;
+      if(dt>MAX_TIME) { swipeProgress=0; return; }
+      const dir=dirFromDelta(dx,dy); if(!dir){ swipeProgress=0; return; }
+      if((dir==="U"||dir==="D")&&Math.abs(dy)<MIN_DIST){ swipeProgress=0; return; }
+      if((dir==="L"||dir==="R")&&Math.abs(dx)<MIN_DIST){ swipeProgress=0; return; }
+      if(dir===swipeSeq[swipeProgress]){
+        swipeProgress++;
+        if(swipeProgress===swipeSeq.length){ openPoem(); swipeProgress=0; }
+      } else { swipeProgress=(dir===swipeSeq[0])?1:0; }
+    },{passive:true});
+    closeBtn.addEventListener('click',closePoem);
+    scrim.addEventListener('click',(e)=>{ if(e.target===scrim) closePoem(); });
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closePoem(); });
+  })();
+</script>
+
+<script>
+  // Easter egg #3 — Banana Duck long-press (mouse/touch) with callout suppression
+  (function(){
+    const duckImg = document.getElementById('bananaDuck');
+    if(!duckImg) return;
+
+    const scrim    = document.getElementById('duckScrim');
+    const closeBtn = document.getElementById('duckClose');
+
+    // Globally suppress the context menu on this image (Android/desktop)
+    duckImg.addEventListener('contextmenu', (e)=> e.preventDefault());
+
+    const HOLD_MS  = 700;
+    const MOVE_TOL = 6;
+
+    let timer=null, holding=false, longPressed=false, startX=0, startY=0, activePointerId=null;
+
+    function openPoem(){ openEggModal('duckScrim','duckModal','zoom'); }
+    function closePoem(){ closeEggModal('duckScrim'); }
+    function clearHold(){
+      holding=false;
+      if(timer){ clearTimeout(timer); timer=null; }
+      if(activePointerId!==null){ try{ duckImg.releasePointerCapture(activePointerId); }catch(e){} activePointerId=null; }
+    }
+
+    function onPointerDown(e){
+      // Prevent the OS/image callout on touch/pen
+      if(e.pointerType !== 'mouse') e.preventDefault();
+
+      if(e.pointerType==='mouse' && e.button!==0) return; // left-click only for mouse
+      holding=true; longPressed=false;
+      startX=e.clientX; startY=e.clientY;
+
+      try{ duckImg.setPointerCapture(e.pointerId); activePointerId=e.pointerId; }catch(_){}
+
+      timer=setTimeout(()=>{ if(holding){ longPressed=true; openPoem(); } }, HOLD_MS);
+    }
+    function onPointerMove(e){
+      if(!holding) return;
+      if(Math.hypot(e.clientX-startX, e.clientY-startY) > MOVE_TOL){
+        clearHold();
+      }
+    }
+    function onPointerUpOrCancel(){ clearHold(); }
+
+    // If a long-press just opened the modal, block the follow-up click that many browsers fire
+    duckImg.addEventListener('click',(e)=>{
+      if(longPressed){ e.preventDefault(); e.stopImmediatePropagation(); longPressed=false; }
+    }, true);
+
+    // IMPORTANT: listeners must be non-passive so preventDefault() works on iOS
+    duckImg.addEventListener('pointerdown', onPointerDown, {passive:false});
+    duckImg.addEventListener('pointermove', onPointerMove, {passive:false});
+    duckImg.addEventListener('pointerup', onPointerUpOrCancel, {passive:false});
+    duckImg.addEventListener('pointercancel', onPointerUpOrCancel, {passive:false});
+
+    // Close handlers
+    closeBtn.addEventListener('click', closePoem);
+    scrim.addEventListener('click', (e)=>{ if(e.target===scrim) closePoem(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePoem(); });
+  })();
+</script>
+
+
+<script>
+  // Easter egg #4 — Hotspot long-press (top-left) with typing effect
+  (function(){
+    const hotspot = document.getElementById('hotspot');
+    const scrim   = document.getElementById('hermosaScrim');
+    const closeBtn= document.getElementById('hermosaClose');
+    const textEl  = document.getElementById('hermosaText');
+
+    const message = `Una vez te pregunté si alguien te había dicho hoy que eras hermosa. Dijiste que no.
+Si alguna vez lo olvidas o necesitas volver a leerlo, aquí está:
+Nunca habrá nadie más hermosa que tú.`;
+
+    const HOLD_MS = 800, MOVE_TOL = 6;
+    let timer=null, holding=false, startX=0, startY=0, activeId=null;
+
+    function typeOut(el, text, speed=40){
+      el.textContent=''; let i=0;
+      (function tick(){ if(i<=text.length){ el.textContent=text.slice(0,i++); setTimeout(tick, speed); } })();
+    }
+    function openPoem(){
+      openEggModal('hermosaScrim','hermosaModal','zoom');
+      typeOut(textEl, message, 40);
+    }
+    function closePoem(){ closeEggModal('hermosaScrim'); }
+
+    function clearHold(){
+      holding=false;
+      if(timer){ clearTimeout(timer); timer=null; }
+      if(activeId!==null){ try{ hotspot.releasePointerCapture(activeId); }catch(e){} activeId=null; }
+    }
+
+    hotspot.addEventListener('pointerdown', (e)=>{
+      if(document.body.classList.contains('modal-open')) return; // disable when a modal is open
+      holding=true; startX=e.clientX; startY=e.clientY;
+      try{ hotspot.setPointerCapture(e.pointerId); activeId=e.pointerId; }catch(e){}
+      timer=setTimeout(()=>{ if(holding) openPoem(); }, HOLD_MS);
+    });
+    hotspot.addEventListener('pointermove', (e)=>{
+      if(!holding) return;
+      if(Math.hypot(e.clientX-startX, e.clientY-startY) > MOVE_TOL){ clearHold(); }
+    });
+    hotspot.addEventListener('pointerup', clearHold);
+    hotspot.addEventListener('pointercancel', clearHold);
+
+    closeBtn.addEventListener('click', closePoem);
+    scrim.addEventListener('click', (e)=>{ if(e.target===scrim) closePoem(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePoem(); });
+  })();
+</script>
+
+</body>
+</html>
